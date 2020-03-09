@@ -11,7 +11,7 @@ contract HolopactToken is ERC777 {
               )
     ERC777("Holopact", "HOLO", defaultOperators)
     public {
-    _mint(msg.sender, msg.sender, initialSupply, "", "");        
+    _mint(msg.sender, msg.sender, initialSupply, "", "");
   }
   
 }
