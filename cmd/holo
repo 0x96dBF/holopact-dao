@@ -1,0 +1,69 @@
+#!/usr/bin/env python3
+
+import argparse
+import os
+import subprocess
+import sys
+
+
+def make_parser():
+    # Make parser object
+    p = argparse.ArgumentParser(description=
+        """
+        Deploy holopact development environment
+        """,
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    
+    subparser = p.add_subparsers(help="command", dest="command")
+
+    dev_parser = subparser.add_parser("dev",
+                                      help="compile and migrate contracts locally")
+    dev_parser.add_argument("-c", "--console", action="store_true",
+                            help="attach to truffle development console")
+    dev_parser.add_argument("-b", "--build", action="store_true",
+                            help="rebuild docker containers")
+
+    return(p)
+
+
+if __name__ == '__main__':
+
+    if sys.version_info<(3,0,0):
+        sys.stderr.write("You need python 3.0 or later to run this script\n")
+        sys.exit(1)
+
+    abspath = os.path.abspath(__file__)
+    dname = os.path.dirname(abspath)
+    os.chdir(dname)
+
+    try:
+        p = make_parser()
+        args = p.parse_args()
+
+        if args.command == "dev":
+            run_ganache = ["docker-compose",
+                          "-p", "holopact",
+                          "--env-file", "../deployments/dev/dev.env",
+                          "-f", "../deployments/dev/docker-compose.ganache.yml",
+                          "up", "-d"]
+            if args.build:
+                run_ganache += ["--build"]
+            subprocess.call(run_ganache)
+            run_truffle = ["docker-compose",
+                           "-p", "holopact",
+                           "--env-file", "../deployments/dev/dev.env",
+                           "-f", "../deployments/dev/docker-compose.dev.yml",
+                           "run",
+                           "--rm",
+                           "dev-box"]
+            if args.console:
+                run_truffle += ["/scripts/launch-console.sh"
+                                # "truffle", "console"
+                                # "--contracts_build_directory", "/build",
+                                # "--network", "development"
+                ]
+            subprocess.call(run_truffle)
+        else:
+            raise Exception()
+    except Exception:
+        p.print_help()
