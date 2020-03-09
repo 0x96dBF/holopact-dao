@@ -9,16 +9,12 @@ services:
     volumes:
       - ../../src/contracts/:/src/contracts
       - ../../deployments/contracts:/src/
+      - ./scripts/:/scripts/
       - dev-build:/build
     tty: true
     stdin_open: true
     env_file: dev.env
-    command:
-      - /bin/sh
-      - -c
-      - |
-        truffle compile --contracts_directory ./migration_contract --contracts_build_directory /build --network development; 
-        truffle migrate --contracts_build_directory /build --network development;
+    command: /scripts/compile-and-migrate.sh
 
 volumes:
   dev-build:
