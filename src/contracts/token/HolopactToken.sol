@@ -1,6 +1,6 @@
 pragma solidity >=0.4.22 <0.7.0;
 
-import "@openzeppelin-solidity/contracts/token/ERC777/ERC777.sol"
+import "@openzeppelin-solidity/contracts/token/ERC777/ERC777.sol";
 
 
 /// @title Basic ERC777 token
