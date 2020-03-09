@@ -20,6 +20,8 @@ def make_parser():
                                       help="compile and migrate contracts locally")
     dev_parser.add_argument("-c", "--console", action="store_true",
                             help="attach to truffle development console")
+    dev_parser.add_argument("-s", "--shell", action="store_true",
+                            help="attach to dev box shell")
     dev_parser.add_argument("-b", "--build", action="store_true",
                             help="rebuild docker containers")
 
@@ -49,6 +51,14 @@ if __name__ == '__main__':
             if args.build:
                 run_ganache += ["--build"]
             subprocess.call(run_ganache)
+
+            if args.build:
+                build_truffle = ["docker-compose",
+                                 "-p", "holopact",
+                                 "-f", "../deployments/dev/docker-compose.dev.yml",
+                                 "build"]
+                subprocess.call(build_truffle)
+
             run_truffle = ["docker-compose",
                            "-p", "holopact",
                            "--env-file", "../deployments/dev/dev.env",
@@ -56,12 +66,12 @@ if __name__ == '__main__':
                            "run",
                            "--rm",
                            "dev-box"]
+
             if args.console:
-                run_truffle += ["/scripts/launch-console.sh"
-                                # "truffle", "console"
-                                # "--contracts_build_directory", "/build",
-                                # "--network", "development"
-                ]
+                run_truffle += ["/scripts/launch-console.sh"]
+            elif args.shell:
+                run_truffle += ["/bin/sh"]
+
             subprocess.call(run_truffle)
         else:
             raise Exception()
