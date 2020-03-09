@@ -1,0 +1,6 @@
+FROM node:alpine
+
+RUN apk add -t .gyp --no-cache git python g++ make
+
+RUN npm install -g truffle@latest \
+    && apk del .gyp
