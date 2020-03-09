@@ -1,7 +1,8 @@
 const Token = artifacts.require("HolopactToken");
 
-web3.provider = web3.currentProvider
-var conf = require('@openzeppelin/test-helpers/configure')(web3);
+var conf = require('@openzeppelin/test-helpers/configure')({
+  provider: web3.currentProvider
+});
 
 const { singletons } = require('@openzeppelin/test-helpers');
 
