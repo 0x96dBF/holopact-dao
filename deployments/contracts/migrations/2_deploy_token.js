@@ -9,5 +9,5 @@ const { singletons } = require('@openzeppelin/test-helpers');
 module.exports = async function(deployer, network, accounts) { 
   const erc1820 = await singletons.ERC1820Registry(accounts[0]);
 
-  await deployer.deploy(Token, 65536, [])
+  await deployer.deploy(Token, 65536);
 };
