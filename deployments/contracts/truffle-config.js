@@ -7,5 +7,17 @@ module.exports = {
       accounts: 5,
       defaultEtherBalance: 500
     }
+  },
+
+  compilers: {
+    solc: {
+      version: "0.6.3",
+      settings: {
+        optimizer: {
+          enabled: true
+        },
+        evmVersion: "petersburg"
+      }
+    }
   }
 }
