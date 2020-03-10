@@ -8,14 +8,13 @@ import "openzeppelin-solidity/contracts/math/SafeMath.sol";
 
 contract DividendToken is ERC777, IDividendToken {
   using SafeMath for uint256;
-  using Address for address payable;
   
   struct DividendBalance {
     uint256 balance;
     uint256 drawnFrom;
   } 
 
-  mapping (address => DividendBalance) private dividendBalance_;
+  mapping (address => DividendBalance) internal dividendBalance_;
   uint256 private adjustedDividends_;
   uint256 private baseTotal_;
   uint256 internal minimum_;
