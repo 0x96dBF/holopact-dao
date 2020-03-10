@@ -7,11 +7,10 @@ import "openzeppelin-solidity/contracts/token/ERC777/ERC777.sol";
 contract HolopactToken is ERC777 {
   
   constructor(uint256 initialSupply,
-              address[] memory defaultOperators
-              )
+              address[] memory defaultOperators)
     ERC777("Holopact", "HOLO", defaultOperators)
     public {
-    _mint(msg.sender, msg.sender, initialSupply, "", "");
+    _mint(msg.sender, msg.sender, initialSupply * (10 ** 18), "", "");
   }
-  
+
 }
