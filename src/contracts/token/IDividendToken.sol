@@ -1,13 +1,13 @@
-pragma solidity >=0.4.22 <0.7.0;
+pragma solidity >=0.6.0 <0.7.0;
 
 
-contract IDividendToken {
+interface IDividendToken {
 
-  function depositDividend() public payable returns (bool);
+  function depositDividend() external payable returns (bool);
 
-  function withdrawBalance() public returns (uint256);
+  function withdrawBalance() external returns (uint256);
 
-  function outstandingBalanceFor(address _account) public view returns (uint256);
+  function outstandingBalanceFor(address _account) external view returns (uint256);
 
   event DividendDeposited(address indexed depositedBy, uint256 amount);
 

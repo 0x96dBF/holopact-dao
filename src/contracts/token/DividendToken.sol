@@ -1,13 +1,12 @@
-pragma solidity >=0.4.22 <0.7.0;
+pragma solidity >=0.6.0 <0.7.0;
 
 import "./IDividendToken.sol";
 import "openzeppelin-solidity/contracts/token/ERC777/ERC777.sol";
 import "openzeppelin-solidity/contracts/math/SafeMath.sol";
 
-
 contract DividendToken is ERC777, IDividendToken {
   using SafeMath for uint256;
-  
+
   struct DividendBalance {
     uint256 balance;
     uint256 drawnFrom;
@@ -30,19 +29,19 @@ contract DividendToken is ERC777, IDividendToken {
     _mint(msg.sender, msg.sender, initialSupply, "", "");
   }
 
-  function depositDividend() public payable returns (bool) {
+  function depositDividend() public payable override returns (bool) {
     require(msg.value >= minimum_, "DividendToken: deposit below minimum");
     _depositDividend(msg.value);
     emit DividendDeposited(msg.sender, msg.value);
   }
 
-  function withdrawBalance() public returns (uint256) {
+  function withdrawBalance() public override returns (uint256) {
     uint amount = _withdrawFor(msg.sender);
     emit BalanceWithdrawn(msg.sender, amount);
     return amount;
   }
 
-  function outstandingBalanceFor(address _account) public view returns (uint256) {
+  function outstandingBalanceFor(address _account) public view override returns (uint256) {
     if (adjustedDividends_ == 0) return 0;
     uint additional = adjustedDividends_
       .sub(dividendBalance_[_account].drawnFrom)
@@ -92,14 +91,14 @@ contract DividendToken is ERC777, IDividendToken {
                  uint256 _amount,
                  bytes memory _data,
                  bytes memory _operatorData)
-    internal
+    internal override
   {
     _updateBalance(_from);
     super._burn(_operator, _from, _amount, _data, _operatorData);
   }
 
   function _beforeTokenTransfer(address, address _from, address _to, uint256)
-    internal
+    internal override
   {
     _updateBalance(_from);
     _updateBalance(_to);
