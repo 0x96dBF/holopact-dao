@@ -1,0 +1,20 @@
+version: '3'
+
+services:
+  dev-box:
+    build:
+      context: ../..
+      dockerfile: ./build/docker/Dockerfile.truffle
+    working_dir: /src/
+    volumes:
+      - ../../src/contracts/:/src/contracts
+      - ../../deployments/contracts:/src/
+      - ./scripts/:/scripts/
+      - dev-build:/build
+    tty: true
+    stdin_open: true
+    env_file: dev.env
+    command: /scripts/compile-and-migrate.sh
+
+volumes:
+  dev-build:

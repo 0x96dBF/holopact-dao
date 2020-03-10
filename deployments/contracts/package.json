@@ -1,0 +1,15 @@
+{
+  "name": "holopact",
+  "version": "0.1.0",
+  "description": "",
+  "main": "truffle-config.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@openzeppelin/test-helpers": "github:OpenZeppelin/openzeppelin-test-helpers",
+    "openzeppelin-solidity": "^2.5.0"
+  }
+}
