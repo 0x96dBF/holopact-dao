@@ -3,6 +3,7 @@ pragma solidity >=0.6.0 <0.7.0;
 import "./IDividendToken.sol";
 import "openzeppelin-solidity/contracts/token/ERC777/ERC777.sol";
 import "openzeppelin-solidity/contracts/math/SafeMath.sol";
+import "openzeppelin-solidity/contracts/utils/Address.sol";
 
 contract DividendToken is ERC777, IDividendToken {
   using SafeMath for uint256;
@@ -70,7 +71,7 @@ contract DividendToken is ERC777, IDividendToken {
     uint balance = dividendBalance_[_address].balance;
     if (balance > 0) {
       dividendBalance_[_address].balance = 0;
-      _address.transfer(balance);
+      _address.sendValue(balance);
     }
     return balance;
   }
