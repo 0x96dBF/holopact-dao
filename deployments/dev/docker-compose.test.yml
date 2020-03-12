@@ -1,0 +1,15 @@
+version: '3'
+
+services:
+  test-box:
+    build:
+      context: ../..
+      dockerfile: ./build/docker/Dockerfile.tests
+    working_dir: /src/
+    volumes:
+      - ../test/:/src/
+      - dev-build:/build
+    tty: true
+    stdin_open: true
+    env_file: dev.env
+    command: sh -c "npm install && npm run test"
