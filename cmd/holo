@@ -59,7 +59,7 @@ if __name__ == '__main__':
                 build_truffle = ["docker-compose",
                                  "-p", "holopact",
                                  "-f", "../deployments/dev/docker-compose.dev.yml",
-                                 "build"]
+                                 "build", "--no-cache"]
                 subprocess.call(build_truffle)
 
             run_truffle = ["docker-compose",
