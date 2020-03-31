@@ -7,6 +7,7 @@ services:
       dockerfile: ./build/docker/Dockerfile.tests
     working_dir: /src/
     volumes:
+      - ../../test/:/src/test/
       - ../test/:/src/
       - dev-build:/build
     tty: true

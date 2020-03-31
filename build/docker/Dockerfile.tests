@@ -7,6 +7,7 @@ RUN apk add --update git
 USER node
 
 ENV NPM_CONFIG_PREFIX=/home/node/.npm-global
+ENV NODE_PATH=/home/node/.npm-global/lib/node_modules
 ENV PATH=$PATH:/home/node/.npm-global/bin
 
 RUN npm install -g @openzeppelin/test-environment @openzeppelin/test-helpers mocha chai
