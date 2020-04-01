@@ -9,7 +9,7 @@ module.exports = {
     defaultGas: 6e6, // Maximum gas for contract calls (when unspecified)
 
     // Options available since v0.1.2
-    defaultGasPrice: 20e9, // Gas price for contract calls (when unspecified)
+    defaultGasPrice: 0, // Gas price for contract calls (when unspecified)
     artifactsDir: '/build', // Directory where contract artifacts are stored
   },
 
