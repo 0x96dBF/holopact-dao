@@ -77,7 +77,7 @@ if __name__ == '__main__':
 
             subprocess.call(run_truffle)
         elif args.command == "test":
-            print("running tests...")
+            print("compiling contracts...")
             run_truffle = ["docker-compose",
                            "-p", "holopact-test",
                            "--env-file", "../deployments/dev/dev.env",
@@ -86,7 +86,7 @@ if __name__ == '__main__':
                            "--rm",
                            "dev-box", "/scripts/compile.sh"]
             subprocess.call(run_truffle)
-            print("build complete")
+            print("running tests...")
             run_tests = ["docker-compose",
                          "-p", "holopact-test",
                          "--env-file", "../deployments/dev/dev.env",
@@ -95,6 +95,13 @@ if __name__ == '__main__':
                          "run", "--rm",
                          "test-box"]
             subprocess.call(run_tests)
+            down = ["docker-compose",
+                    "-p", "holopact-test",
+                    "--env-file", "../deployments/dev/dev.env",
+                    "-f", "../deployments/dev/docker-compose.dev.yml",
+                    "-f", "../deployments/dev/docker-compose.test.yml", 
+                    "down", "-v"]
+            subprocess.call(down)
         else:
             raise Exception()
     except Exception:
