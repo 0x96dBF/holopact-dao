@@ -28,7 +28,7 @@ describe('DividendToken', function() {
         describe('restrictions', function() {
             it('should revert on payment to zero balance contract', async function () {
                 await expectRevert(this.token.depositDividend({from: funder, 
-                                                             value: smallAmount}),
+                                                               value: smallAmount}),
                                    'DividendToken: no tokens to distribute to')
             });
         })
@@ -36,8 +36,36 @@ describe('DividendToken', function() {
 
     context('with no minimum deposit', function () {
         beforeEach(async function () {
-            this.token = await DividendToken.new(creator, name, symbol, operators, initialSupply, 0);
+            this.token = await DividendToken.new(name, symbol, operators, initialSupply, 0,
+                                                 {from: creator});
         });
-        
+
+        describe('on initialization', function () {
+            it('should owe 0 dividend', async function () {
+                expect(await this.token.outstandingBalanceFor(anyone, {from: anyone}))
+                    .to.be.bignumber.equal('0');
+            });
+
+            it('should pay 0 dividend after initialization', async function () {
+                // assume that gas price is set to 0 for testing
+                var initialBalance = await web3.eth.getBalance(anyone);
+                await this.token.withdrawBalance({from: anyone});
+                expect(await web3.eth.getBalance(anyone)).to.be.equal(initialBalance);
+            });
+        });
+
+        describe('events', function () {
+            it('should emit DividendDeposited event', async function () {
+                expectEvent(await this.token.depositDividend({from: funder,
+                                                              value: amount}),
+                            'DividendDeposited', { depositedBy: funder, amount: amount });
+            });
+
+            it('should emit BalanceWithdrawn event', async function () {
+                this.token.depositDividend({from: funder, value: amount})
+                expectEvent(await this.token.withdrawBalance({from: anyone}),
+                            'BalanceWithdrawn', { recipient: anyone, amount: '0' });
+            });
+        });
     });
 });
