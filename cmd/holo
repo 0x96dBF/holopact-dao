@@ -78,15 +78,17 @@ if __name__ == '__main__':
             subprocess.call(run_truffle)
         elif args.command == "test":
             print("running tests...")
-            run_ganache = ["docker-compose",
-                          "-p", "holopact",
-                          "--env-file", "../deployments/dev/dev.env",
-                          "-f", "../deployments/dev/docker-compose.ganache.yml",
-                          "up", "-d"]
-            subprocess.call(run_ganache)
+            run_truffle = ["docker-compose",
+                           "-p", "holopact-test",
+                           "--env-file", "../deployments/dev/dev.env",
+                           "-f", "../deployments/dev/docker-compose.dev.yml",
+                           "run",
+                           "--rm",
+                           "dev-box", "/scripts/compile.sh"]
+            subprocess.call(run_truffle)
             print("build complete")
             run_tests = ["docker-compose",
-                         "-p", "holopact",
+                         "-p", "holopact-test",
                          "--env-file", "../deployments/dev/dev.env",
                          "-f", "../deployments/dev/docker-compose.dev.yml",
                          "-f", "../deployments/dev/docker-compose.test.yml", 
