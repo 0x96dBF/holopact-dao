@@ -13,8 +13,8 @@ describe('DividendToken', function() {
     const name = 'DividendToken'
     const symbol = 'DIV'
     const operators = []
-    const smallAmount = new BN(41)
-    const amount = new BN(42)
+    const smallAmount = new BN(42)
+    const amount = new BN(64)
 
     beforeEach(async function () {
         this.erc1820 = await singletons.ERC1820Registry(registryFunder);
@@ -46,7 +46,7 @@ describe('DividendToken', function() {
                     .to.be.bignumber.equal('0');
             });
 
-            it('should pay 0 dividend after initialization', async function () {
+            it('should pay 0 dividend', async function () {
                 // assume that gas price is set to 0 for testing
                 var initialBalance = await web3.eth.getBalance(anyone);
                 await this.token.withdrawBalance({from: anyone});
@@ -66,6 +66,101 @@ describe('DividendToken', function() {
                 expectEvent(await this.token.withdrawBalance({from: anyone}),
                             'BalanceWithdrawn', { recipient: anyone, amount: '0' });
             });
+        });
+
+        describe('depositing dividends', function () {
+            it('should hold correct balance in token', async function () {
+                await this.token.depositDividend({from: funder, value: amount});
+                expect(await web3.eth.getBalance(this.token.address))
+                    .to.be.bignumber.equal(amount);
+            });
+
+            it('should owe full dividend', async function () {
+                await this.token.depositDividend({from: funder, value: amount});
+                expect(await this.token.outstandingBalanceFor.call(creator))
+                    .to.be.bignumber.equal(amount);
+            });
+
+            it('should pay full dividend', async function () {
+                var initialBalance = new BN(await web3.eth.getBalance(creator));
+                await this.token.depositDividend({from: funder, value: amount});
+                await this.token.withdrawBalance({from: creator});
+                expect(await web3.eth.getBalance(creator))
+                    .to.be.bignumber.equal(initialBalance.add(amount));
+            });
+
+            it('should owe correct proportion of dividend', async function () {
+                await this.token.send(anyone, 256, [], {from: creator});
+                await this.token.depositDividend({from: funder, value: amount});
+                expect(await this.token.outstandingBalanceFor.call(anyone))
+                    .to.be.bignumber.equal(new BN(16));
+                expect(await this.token.outstandingBalanceFor.call(creator))
+                    .to.be.bignumber.equal(new BN(48));
+            });
+
+            it('should pay correct proportion of dividend', async function () {
+                var creatorBalance = new BN(await web3.eth.getBalance(creator));
+                var anyoneBalance = new BN(await web3.eth.getBalance(anyone));
+                await this.token.send(anyone, 256, [], {from: creator});
+                await this.token.depositDividend({from: funder, value: amount});
+                await this.token.withdrawBalance({from: creator});
+                await this.token.withdrawBalance({from: anyone});
+                expect(await web3.eth.getBalance(anyone))
+                    .to.be.bignumber.equal(anyoneBalance.add(new BN(16)));
+                expect(await web3.eth.getBalance(creator))
+                    .to.be.bignumber.equal(creatorBalance.add(new BN(48)));
+            });
+
+            it('should owe 0 after withdrawing', async function () {
+                await this.token.depositDividend({from: funder, value: amount});
+                await this.token.withdrawBalance({from: creator});
+                expect(await this.token.outstandingBalanceFor.call(creator))
+                    .to.be.bignumber.equal(new BN(0));
+            });
+
+            it('should pay 0 after withdrawing', async function () {
+                await this.token.depositDividend({from: funder, value: amount});
+                await this.token.withdrawBalance({from: creator});
+                var creatorBalance = new BN(await web3.eth.getBalance(creator));
+                await this.token.withdrawBalance({from: creator});
+                expect(await web3.eth.getBalance(creator))
+                    .to.be.bignumber.equal(creatorBalance);
+            });
+
+            it('should owe correct dividend after post-deposit transfer', async function () {
+                await this.token.depositDividend({from: funder, value: amount});
+                await this.token.send(anyone, 256, [], {from: creator});
+                expect(await this.token.outstandingBalanceFor.call(creator))
+                    .to.be.bignumber.equal(amount);
+            });
+
+            it('should pay correct dividend after post-deposit transfer', async function () {
+                var creatorBalance = new BN(await web3.eth.getBalance(creator));
+                await this.token.depositDividend({from: funder, value: amount});
+                await this.token.withdrawBalance({from:creator});
+                await this.token.send(anyone, 256, [], {from: creator});
+                expect(await web3.eth.getBalance(creator))
+                    .to.be.bignumber.equal(creatorBalance.add(amount));
+            });
+
+            it('should owe correct cumulative dividends in proportion', async function () {
+                await this.token.depositDividend({from: funder, value: amount});
+                await this.token.send(anyone, 512, [], {from: creator});
+                await this.token.depositDividend({from: funder, value: amount});
+                expect(await this.token.outstandingBalanceFor.call(creator))
+                    .to.be.bignumber.equal(new BN(96));
+            });
+
+            it('should pay correct cumulative dividends in proportion', async function () {
+                var creatorBalance = new BN(await web3.eth.getBalance(creator));
+                await this.token.depositDividend({from: funder, value: amount});
+                await this.token.send(anyone, 512, [], {from: creator});
+                await this.token.depositDividend({from: funder, value: amount});
+                await this.token.withdrawBalance({from: creator});
+                expect(await web3.eth.getBalance(creator))
+                    .to.be.bignumber.equal(creatorBalance.add(new BN(96)));
+            });
+
         });
     });
 });
