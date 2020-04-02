@@ -38,7 +38,7 @@ contract DividendToken is ERC777, IDividendToken {
         public {
         baseTotal_ = initialSupply;
         minimum_ = minimumDeposit;
-        _mint(msg.sender, msg.sender, initialSupply, "", "");
+        _mint(msg.sender, initialSupply, "", "");
     }
 
     /**
@@ -133,7 +133,6 @@ contract DividendToken is ERC777, IDividendToken {
      * are burned
      */
     function _burn(
-        address _operator,
         address _from,
         uint256 _amount,
         bytes memory _data,
@@ -142,7 +141,7 @@ contract DividendToken is ERC777, IDividendToken {
         internal override
     {
         _updateBalance(_from);
-        super._burn(_operator, _from, _amount, _data, _operatorData);
+        super._burn(_from, _amount, _data, _operatorData);
     }
 
     /**
