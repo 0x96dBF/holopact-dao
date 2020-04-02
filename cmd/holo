@@ -95,13 +95,6 @@ if __name__ == '__main__':
                          "run", "--rm",
                          "test-box"]
             subprocess.call(run_tests)
-            down = ["docker-compose",
-                    "-p", "holopact-test",
-                    "--env-file", "../deployments/dev/dev.env",
-                    "-f", "../deployments/dev/docker-compose.dev.yml",
-                    "-f", "../deployments/dev/docker-compose.test.yml", 
-                    "down", "-v"]
-            subprocess.call(down)
         else:
             raise Exception()
     except Exception:

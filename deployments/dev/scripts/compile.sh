@@ -1,4 +1,5 @@
 #! /bin/sh
 
 npm install > "/dev/null" 2>&1 &&
-    truffle compile --contracts_build_directory /build --network development
+    rm -rf /build/* &&
+    truffle compile --all --contracts_build_directory /build --network development

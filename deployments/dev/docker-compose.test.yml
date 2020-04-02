@@ -13,4 +13,4 @@ services:
     tty: true
     stdin_open: true
     env_file: dev.env
-    command: sh -c "npm install && npm run test"
+    command: sh -c "npm install  > /dev/null 2>&1 && npm run test"
