@@ -1,8 +1,20 @@
-FROM node:alpine
+FROM ethereum/solc:0.6.4-alpine AS solc
+
+FROM node:alpine AS truffle
 
 RUN apk add -t .gyp --no-cache g++ make
 RUN apk add --update python
 RUN apk add --update git
 
-RUN npm install -g truffle@latest \
-    && apk del .gyp
+WORKDIR /vendor/
+
+RUN git clone -b mem-fix https://github.com/0x96dBF/truffle.git
+WORKDIR /vendor/truffle/
+RUN yarn bootstrap
+
+USER root
+
+RUN apk del .gyp
+
+COPY --from=solc /usr/local/bin/solc /usr/local/bin/solc
+ENV PATH="/vendor/truffle/node_modules/.bin/:${PATH}"
