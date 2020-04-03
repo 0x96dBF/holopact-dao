@@ -90,6 +90,10 @@ contract DividendToken is ERC777, IDividendToken {
     function _depositDividend(uint256 _value) internal {
         require(_distributableSupply() > 0, "DividendToken: no tokens to distribute to");
 
+        if (baseTotal_ == 0) {
+            baseTotal_ = _distributableSupply();
+        }
+
         if (_distributableSupply() == baseTotal_)
             adjustedDividends_ = adjustedDividends_.add(_value);
         else {
