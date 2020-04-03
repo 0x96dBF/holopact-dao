@@ -1,0 +1,11 @@
+{
+  "name": "holopact-test",
+  "version": "0.1.0",
+  "description": "",
+  "main": "test-environment.config.js",
+  "scripts": {
+    "test": "mocha --exit --recursive"
+  },
+  "author": "",
+  "license": "ISC"
+}

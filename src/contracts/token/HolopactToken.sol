@@ -12,6 +12,6 @@ contract HolopactToken is DividendToken {
                       new address[](0),
                       initialSupply * (10 ** 18),
                       1)
-    public {}
+        public {}
 
 }

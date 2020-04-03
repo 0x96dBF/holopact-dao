@@ -25,6 +25,9 @@ def make_parser():
     dev_parser.add_argument("-b", "--build", action="store_true",
                             help="rebuild docker containers")
 
+    test_parser = subparser.add_parser("test",
+                                       help="run test suites")
+
     return(p)
 
 
@@ -56,7 +59,7 @@ if __name__ == '__main__':
                 build_truffle = ["docker-compose",
                                  "-p", "holopact",
                                  "-f", "../deployments/dev/docker-compose.dev.yml",
-                                 "build"]
+                                 "build", "--no-cache"]
                 subprocess.call(build_truffle)
 
             run_truffle = ["docker-compose",
@@ -73,6 +76,25 @@ if __name__ == '__main__':
                 run_truffle += ["/bin/sh"]
 
             subprocess.call(run_truffle)
+        elif args.command == "test":
+            print("compiling contracts...")
+            run_truffle = ["docker-compose",
+                           "-p", "holopact-test",
+                           "--env-file", "../deployments/dev/dev.env",
+                           "-f", "../deployments/dev/docker-compose.dev.yml",
+                           "run",
+                           "--rm",
+                           "dev-box", "/scripts/compile.sh"]
+            subprocess.call(run_truffle)
+            print("running tests...")
+            run_tests = ["docker-compose",
+                         "-p", "holopact-test",
+                         "--env-file", "../deployments/dev/dev.env",
+                         "-f", "../deployments/dev/docker-compose.dev.yml",
+                         "-f", "../deployments/dev/docker-compose.test.yml", 
+                         "run", "--rm",
+                         "test-box"]
+            subprocess.call(run_tests)
         else:
             raise Exception()
     except Exception:
