@@ -31,6 +31,21 @@ describe('DividendToken', function() {
         })
     });
 
+    context('with minimum deposit', function () {
+        beforeEach(async function () {
+            this.token = await DividendTokenMock.new(amount);
+            await this.token.mintInternal(holder, initialSupply);
+        });
+
+        describe('restrictions', function() {
+            it('should revert on payment below minimum', async function () {
+                await expectRevert(this.token.depositDividend({from: funder,
+                                                               value: smallAmount}),
+                                   'DividendToken: deposit below minimum');
+            });
+        });
+    })
+
     context('with no minimum deposit', function () {
         beforeEach(async function () {
             this.token = await DividendTokenMock.new(0);
@@ -157,7 +172,56 @@ describe('DividendToken', function() {
                 expect(await web3.eth.getBalance(holder))
                     .to.be.bignumber.equal(holderBalance.add(new BN(96)));
             });
+        });
 
+        describe('changing supply', function () {
+            it('should owe correct amount after increase in supply', async function () {
+                await this.token.send(anyone, 256, [], {from: holder});
+                await this.token.mintInternal(anyone, 512); // holder/anyone same balance
+                await this.token.depositDividend({from: funder, value: amount});
+                expect(await this.token.outstandingBalanceFor.call(holder))
+                    .to.be.bignumber.equal(new BN(32));
+                expect(await this.token.outstandingBalanceFor.call(anyone))
+                    .to.be.bignumber.equal(new BN(32));
+            });
+
+            it('should pay correct amount after increase in supply', async function () {
+                var holderBalance = new BN(await web3.eth.getBalance(holder));
+                var anyoneBalance = new BN(await web3.eth.getBalance(anyone));
+                await this.token.send(anyone, 256, [], {from: holder});
+                await this.token.mintInternal(anyone, 512); // holder/anyone same balance
+                await this.token.depositDividend({from: funder, value: amount});
+                await this.token.withdrawBalance({from: holder});
+                await this.token.withdrawBalance({from: anyone});
+                expect(await web3.eth.getBalance(holder))
+                    .to.be.bignumber.equal(holderBalance.add(new BN(32)))
+                expect(await web3.eth.getBalance(anyone))
+                    .to.be.bignumber.equal(anyoneBalance.add(new BN(32)))
+            });
+
+            it('should owe correct amount after decrease in supply', async function () {
+                await this.token.send(anyone, 256, [], {from: holder});
+                await this.token.burnInternal(holder, 512); // holder/anyone same balance
+                await this.token.depositDividend({from: funder, value: amount});
+                expect(await this.token.outstandingBalanceFor.call(holder))
+                    .to.be.bignumber.equal(new BN(32));
+                expect(await this.token.outstandingBalanceFor.call(anyone))
+                    .to.be.bignumber.equal(new BN(32));
+            });
+
+            it('should pay correct amount after decrease in supply', async function () {
+                var holderBalance = new BN(await web3.eth.getBalance(holder));
+                var anyoneBalance = new BN(await web3.eth.getBalance(anyone));
+                await this.token.send(anyone, 256, [], {from: holder});
+                await this.token.burnInternal(holder, 512); // holder/anyone same balance
+                await this.token.depositDividend({from: funder, value: amount});
+                await this.token.withdrawBalance({from: holder});
+                await this.token.withdrawBalance({from: anyone});
+                expect(await web3.eth.getBalance(holder))
+                    .to.be.bignumber.equal(holderBalance.add(new BN(32)))
+                expect(await web3.eth.getBalance(anyone))
+                    .to.be.bignumber.equal(anyoneBalance.add(new BN(32)))
+            });
         });
     });
 });
