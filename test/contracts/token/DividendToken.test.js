@@ -4,15 +4,12 @@ const { BN, expectEvent, expectRevert, singletons } = require('@openzeppelin/tes
 
 const { expect } = require('chai');
 
-const DividendToken = contract.fromArtifact('DividendToken');
+const DividendTokenMock = contract.fromArtifact('DividendTokenMock');
 
 describe('DividendToken', function() {
     const [ registryFunder, holder, funder, anyone ] = accounts;
 
     const initialSupply = new BN('1024')
-    const name = 'DividendToken'
-    const symbol = 'DIV'
-    const operators = []
     const smallAmount = new BN(42)
     const amount = new BN(64)
 
@@ -22,7 +19,7 @@ describe('DividendToken', function() {
 
     context('with zero supply', function () {
         beforeEach(async function () {
-            this.token = await DividendToken.new(name, symbol, operators, 0, 0);
+            this.token = await DividendTokenMock.new(0);
         });
 
         describe('restrictions', function() {
@@ -36,8 +33,8 @@ describe('DividendToken', function() {
 
     context('with no minimum deposit', function () {
         beforeEach(async function () {
-            this.token = await DividendToken.new(name, symbol, operators, initialSupply, 0,
-                                                 {from: holder});
+            this.token = await DividendTokenMock.new(0);
+            await this.token.mintInternal(holder, initialSupply);
         });
 
         describe('on initialization', function () {
