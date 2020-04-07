@@ -1,5 +1,4 @@
 version: '3'
-
 services:
   dev-box:
     build:
@@ -8,7 +7,7 @@ services:
     working_dir: /src/
     volumes:
       - ../../src/contracts/:/src/contracts
-      - ../../deployments/contracts:/src/
+      - ../../deployments/truffle:/src/
       - ./scripts/:/scripts/
       - dev-build:/build
     tty: true
