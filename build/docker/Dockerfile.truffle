@@ -1,6 +1,6 @@
 FROM ethereum/solc:0.6.4-alpine AS solc
 
-FROM node:alpine AS truffle
+FROM node:alpine
 
 RUN apk add -t .gyp --no-cache g++ make
 RUN apk add --update python
